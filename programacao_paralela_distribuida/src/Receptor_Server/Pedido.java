@@ -1,4 +1,4 @@
-package Receptores_Server;
+package Receptor_Server;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;

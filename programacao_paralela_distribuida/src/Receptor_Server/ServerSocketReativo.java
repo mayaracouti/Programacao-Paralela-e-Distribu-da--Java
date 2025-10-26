@@ -1,4 +1,4 @@
-package Receptores_Server;
+package Receptor_Server;
 
 import java.io.*;
 import java.net.*;

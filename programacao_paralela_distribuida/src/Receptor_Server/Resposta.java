@@ -1,4 +1,4 @@
-package Receptores_Server;
+package Receptor_Server;
 
 /**
  * Resposta enviada pelo R contendo a contagem (int).
