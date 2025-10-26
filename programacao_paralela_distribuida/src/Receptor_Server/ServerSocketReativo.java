@@ -12,7 +12,7 @@ import java.net.*;
  */
 public class ServerSocketReativo {
 
-    private static final int PORTA = 12345;
+    private static final int PORTA = 12344;
 
     public static void main(String[] args) {
         System.out.println("[R] Iniciando servidor receptor na porta " + PORTA + "...");
