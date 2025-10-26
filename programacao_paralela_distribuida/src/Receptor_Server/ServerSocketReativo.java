@@ -52,7 +52,7 @@ public class ServerSocketReativo {
 
                         // 5. PROCESSA O OBJETO RECEBIDO
                         if (objetoRecebido instanceof Pedido) {
-                            Pedido pedido = (Pedido) objetoRecebido;
+                            Pedido pedido = (Pedido) objetoRecebido;/*"Type Cast": força o obj generico a ser tratado como um objeto do tipo 'Pedido', para que seus métodos específicos possam ser usados*/
                             System.out.println("[R] Pedido recebido de " + enderecoCliente);
 
                             // 6. CHAMA A LÓGICA PARALELA
@@ -76,10 +76,13 @@ public class ServerSocketReativo {
                     }
                 } catch (EOFException eof) {
                     System.out.println("[R] Cliente " + enderecoCliente + " desconectou abruptamente.");
+
                 } catch (ClassNotFoundException cnf) {
                     System.err.println("[R] Erro ao desserializar objeto: " + cnf.getMessage());
+
                 } catch (IOException e) {
                     System.err.println("[R] Erro de E/S na comunicação com " + enderecoCliente + ": " + e.getMessage());
+                    
                 } finally {
                     try {
                         socketCliente.close(); // Garante que o socket do cliente feche
