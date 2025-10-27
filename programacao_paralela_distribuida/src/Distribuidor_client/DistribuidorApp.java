@@ -17,7 +17,7 @@ public class DistribuidorApp {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        String[] servidores = { "127.0.0.1", "127.0.0.1" };
+        String[] servidores = { "127.0.0.1", "127.0.0.1","172.16.232.48" };
         int[] portas = { 12344, 12345 };
 
         System.out.print("Digite o tamanho do vetor: ");
@@ -75,7 +75,8 @@ public class DistribuidorApp {
                     System.out.println("[D] Enviando Pedido para " + ip + ":" + porta + ". Tamanho da parte: " + subVetor.length);
 
                     Object obj = ois.readObject();
-                    if (obj instanceof Resposta resposta) {
+                    if (obj instanceof Resposta) {
+                        Resposta resposta = (Resposta) obj;
                         resultados[idx] = resposta.getContagem();
                         System.out.println(
                                 "[D] Resposta recebida de " + ip + ":" + porta + " -> Contagem parcial: " + resposta.getContagem());

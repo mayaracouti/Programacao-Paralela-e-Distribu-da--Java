@@ -4,11 +4,11 @@ import java.io.*;
 import java.net.*;
 
 public class ServerSocketReativo {
-    
-    private static final int PORTA_DEFAULT = 12344; 
+
+    private static final int PORTA_DEFAULT = 12344;
 
     public static void main(String[] args) {
-        
+
         int PORTA;
         
         if (args.length == 0) {
@@ -25,9 +25,9 @@ public class ServerSocketReativo {
 
         System.out.println("[R] Iniciando servidor receptor na porta " + PORTA + "...");
 
-        try (ServerSocket socketServidor = new ServerSocket(PORTA)) { 
-            
-            while(true) {
+                try (ServerSocket socketServidor = new ServerSocket(PORTA)) {
+
+                        while(true) {
                 System.out.println("\n[R] Aguardando nova conexão...");
                 Socket socketCliente = socketServidor.accept();
                 String enderecoCliente = socketCliente.getInetAddress().getHostAddress();
@@ -36,30 +36,30 @@ public class ServerSocketReativo {
                 try (
                         ObjectOutputStream transmissorDeObjetos = new ObjectOutputStream(socketCliente.getOutputStream());
                         ObjectInputStream receptorDeObjetos = new ObjectInputStream(socketCliente.getInputStream())) {
-
+                    
                     transmissorDeObjetos.flush();
                     System.out.println("[R] Streams de objetos criados com sucesso.");
-                    
+
                     boolean continuarConectado = true;
-
+                    
                     while(continuarConectado) {
-                        
-                        Object objetoRecebido = receptorDeObjetos.readObject();
 
-                        if (objetoRecebido instanceof Pedido pedido) {
+                                                Object objetoRecebido = receptorDeObjetos.readObject();
+
+                                                if (objetoRecebido instanceof                             Pedido pedido) {
                             System.out.println("[R] Pedido recebido de " + enderecoCliente);
-                            
-                            int resultado = pedido.contar();
+
+                                                        int resultado = pedido.contar();
                             System.out.println("[R] Contagem paralela concluída: " + resultado);
 
-                            Resposta resposta = new Resposta(resultado);
+                                                        Resposta resposta = new Resposta(resultado);
                             transmissorDeObjetos.writeObject(resposta);
                             transmissorDeObjetos.flush();
                             System.out.println("[R] Resposta enviada para " + enderecoCliente);
-                            
+
                         } else if (objetoRecebido instanceof ComunicadoEncerramento) {
                             System.out.println("[R] Comunicado de Encerramento recebido de " + enderecoCliente);
-                            continuarConectado = false; 
+                            continuarConectado = false;
                         } else {
                             System.out.println("[R] Objeto desconhecido recebido: " + objetoRecebido.getClass().getName());
                         }
@@ -70,10 +70,10 @@ public class ServerSocketReativo {
                     System.err.println("[R] Erro ao desserializar objeto: " + cnf.getMessage());
                 } catch (IOException e) {
                     System.err.println("[R] Erro de E/S na comunicação com " + enderecoCliente + ": " + e.getMessage());
-                } finally {
+                                    } finally {
                     try {
-                        if (socketCliente != null && !socketCliente.isClosed()) {
-                            socketCliente.close(); 
+if (socketCliente != null && !socketCliente.isClosed()) {
+                        socketCliente.close(); 
                         }
                     } catch (IOException e) {
                         System.err.println("[R] Erro ao fechar o socket do cliente: " + e.getMessage());
