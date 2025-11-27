@@ -20,8 +20,14 @@ public class DistribuidorApp {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        String[] servidores = { "172.16.234.165", "172.16.232.131" };
+
+        // MODO TESTE LOCAL: usando localhost com portas diferentes
+        String[] servidores = { "172.16.225.168", "172.16.232.131" };
         int[] portas = { 12344, 12344 }; // DUAS PORTAS DIFERENTES!
+
+        // MODO DISTRIBUÍDO: descomente quando os servidores remotos estiverem rodando
+        // String[] servidores = { "172.16.225.168", "172.16.232.131" };
+        // int[] portas = { 12344, 12344 }; // Mesma porta em máquinas diferentes
 
         System.out.print("Digite o tamanho do vetor: ");
         int tamanho = sc.nextInt();
