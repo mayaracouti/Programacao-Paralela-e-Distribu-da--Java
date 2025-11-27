@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "ServerSocketReativo",
+            "request": "launch",
+            "mainClass": "Receptor_Server.ServerSocketReativo",
+            "projectName": "programacao_paralela_distribuida_5673cfdd"
+        },
+        {
+            "type": "java",
+            "name": "Debug Distribuidor",
+            "request": "launch",
+            "mainClass": "Distribuidor_client.DistribuidorApp",
+            "projectName": "programacao_paralela_distribuida"
+        }
+    ]
+}
