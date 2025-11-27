@@ -13,80 +13,64 @@ public class ServerSocketReativo {
 
         if (args.length == 0) {
             PORTA = PORTA_DEFAULT;
-            System.err.println("AVISO: Nenhuma porta especificada. Usando porta padrão " + PORTA + ".");
+            System.err.println("[R] AVISO: Nenhuma porta especificada. Usando porta padrão " + PORTA + ".");
         } else {
             try {
                 PORTA = Integer.parseInt(args[0]);
             } catch (NumberFormatException e) {
-                System.err.println("ERRO: O argumento '" + args[0] + "' não é um número de porta válido. Encerrando.");
+                System.err.println("[R] ERRO: Porta inválida '" + args[0] + "'. Encerrando.");
                 return;
             }
         }
 
-        System.out.println("[R] Iniciando servidor receptor na porta " + PORTA + "...");
-
-        try (ServerSocket socketServidor = new ServerSocket(PORTA)) {
-
+        System.out.println("[R] Iniciando servidor na porta " + PORTA + "...");
+        
+        // Bind em todas as interfaces (0.0.0.0) para aceitar conexões remotas
+        try (ServerSocket servidor = new ServerSocket(PORTA, 50, InetAddress.getByName("0.0.0.0"))) {
+            System.out.println("[R] Servidor aguardando conexões na porta " + PORTA + " (todas as interfaces)");
+            System.out.println("[R] IP local: " + InetAddress.getLocalHost().getHostAddress());
+            
             while (true) {
-                System.out.println("\n[R] Aguardando nova conexão...");
-                Socket socketCliente = socketServidor.accept();
-                String enderecoCliente = socketCliente.getInetAddress().getHostAddress();
-                System.out.println("[R] Conexão aceita de " + enderecoCliente + ":" + socketCliente.getPort());
+                Socket conexao = servidor.accept();
+                System.out.println("[R] Conexão estabelecida com " + conexao.getInetAddress());
 
-                try (
-                        ObjectOutputStream transmissorDeObjetos = new ObjectOutputStream(
-                                socketCliente.getOutputStream());
-                        ObjectInputStream receptorDeObjetos = new ObjectInputStream(socketCliente.getInputStream())) {
+                try (ObjectOutputStream transmissor = new ObjectOutputStream(conexao.getOutputStream());
+                     ObjectInputStream receptor = new ObjectInputStream(conexao.getInputStream())) {
+                    
+                    transmissor.flush();
+                    boolean continuar = true;
 
-                    transmissorDeObjetos.flush();
-                    System.out.println("[R] Streams de objetos criados com sucesso.");
+                    while (continuar) {
+                        Object recebido = receptor.readObject();    
 
-                    boolean continuarConectado = true;
-
-                    while (continuarConectado) {
-
-                        Object objetoRecebido = receptorDeObjetos.readObject();
-
-                        if (objetoRecebido instanceof Pedido) {
-                            Pedido pedido = (Pedido) objetoRecebido;
-                            System.out.println("[R] Pedido recebido de " + enderecoCliente);
-
-                            int resultado = pedido.contar();
-                            System.out.println("[R] Contagem paralela concluída: " + resultado);
-
-                            Resposta resposta = new Resposta(resultado);
-                            transmissorDeObjetos.writeObject(resposta);
-                            transmissorDeObjetos.flush();
-                            System.out.println("[R] Resposta enviada para " + enderecoCliente);
-
-                        } else if (objetoRecebido instanceof ComunicadoEncerramento) {
-                            System.out.println("[R] Comunicado de Encerramento recebido de " + enderecoCliente);
-                            continuarConectado = false;
-                        } else {
-                            System.out.println(
-                                    "[R] Objeto desconhecido recebido: " + objetoRecebido.getClass().getName());
+                        if (recebido instanceof Pedido) {
+                            Pedido pedido = (Pedido) recebido;
+                            int contagem = pedido.contar();
+                            transmissor.writeObject(new Resposta(contagem));
+                            transmissor.flush();
+                            System.out.println("[R] Pedido processado. Contagem = " + contagem);
+                        } else if (recebido instanceof ComunicadoEncerramento) {
+                            System.out.println("[R] Encerrando conexão com " + conexao.getInetAddress());
+                            continuar = false;
                         }
                     }
-                } catch (EOFException eof) {
-                    System.out.println("[R] Cliente " + enderecoCliente + " desconectou abruptamente.");
-                } catch (ClassNotFoundException cnf) {
-                    System.err.println("[R] Erro ao desserializar objeto: " + cnf.getMessage());
+                } catch (ClassNotFoundException e) {
+                    System.err.println("[R] Erro ao desserializar objeto: " + e.getMessage());
                 } catch (IOException e) {
-                    System.err.println("[R] Erro de E/S na comunicação com " + enderecoCliente + ": " + e.getMessage());
+                    System.err.println("[R] Erro de E/S na comunicação: " + e.getMessage());
                 } finally {
                     try {
-                        if (socketCliente != null && !socketCliente.isClosed()) {
-                            socketCliente.close();
+                        if (!conexao.isClosed()) {
+                            conexao.close();
                         }
                     } catch (IOException e) {
-                        System.err.println("[R] Erro ao fechar o socket do cliente: " + e.getMessage());
+                        System.err.println("[R] Erro ao fechar conexão: " + e.getMessage());
                     }
-                    System.out
-                            .println("[R] Conexão com " + enderecoCliente + " encerrada. Voltando a aceitar conexões.");
                 }
             }
+
         } catch (IOException e) {
-            System.err.println("[R] Não foi possível iniciar o servidor na porta " + PORTA + ": " + e.getMessage());
+            System.err.println("[R] Erro ao iniciar servidor: " + e.getMessage());
             e.printStackTrace();
         }
     }
